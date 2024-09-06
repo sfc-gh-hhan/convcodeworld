@@ -12,12 +12,12 @@ setup(
     description='Benchmarking Conversational Code Generation in Reproducible Environments',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/your_project',  # Project's homepage
+    url='https://github.com/sfc-gh-hhan/convcodeworld',  # Project's homepage
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',  # Adjust as necessary
         'Operating System :: OS Independent',
     ],
-    python_requires='=3.9.19',  # Specify your Python version requirement
+    python_requires='==3.9.19',  # Specify your Python version requirement
 )
 
