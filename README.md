@@ -55,9 +55,43 @@ ConvCodeBench is cheaper...
 
 To get started, please first set up the environment:
 
+### Install MiniConda
 ```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b
+conda install conda-forge::conda-ecosystem-user-package-isolation
+# Restart the kernel
 ```
 
+### Setup Conda Environments
+All you need to do is run `setup.sh` 😊.
+```bash
+bash setup.sh
+```
+This script will create three environments:
+- `ConvCodeWorld`: The main environment for ConvCode[World|Bench] 
+- `bigcodebench`: [BigCodeBench](https://github.com/bigcode-project/bigcodebench) for initial code generation and code execution
+- `vllm`: [vLLM](https://github.com/vllm-project/vllm) to accelerate inference speed of open-source LLMs
+
+### OpenAI API Key 
+Please save your API key in `convcodeworld` folder (where `run.py` is placed).
+```bash
+cd convcodeworld
+echo $OPENAI_API_KEY > .api_key
+```
+This is necessary if 1) you run on ConvCodeWorld, or 2) you want to use OpenAI models for code generation.  
+
+### Run vLLM 
+If you want to use open-source models for code generation, you need to run: 
+```bash
+bash run_vllm.sh $MODEL_NAME
+# Now open another kernel and run ConvCode[World|Bench]!  
+```
+Note that `$MODEL_NAME` is a full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`. 
+The default setting is to use `bfloat16` and to occupy a single GPU.
+If you want to use quantization, you can simply include `--quantization="fp8"` in `run_vllm.sh`.
+Similarly, if you want to use `n` gpus, you can include: `--tensor-parallel-size n`.
 
 ## 🔍 Failure Inspection
 
@@ -108,3 +142,4 @@ We share pre-generated code samples from LLMs we have [evaluated]().
 
 - [BigCodeBench](https://github.com/bigcode-project/bigcodebench)
 - [DSPy](https://github.com/stanfordnlp/dspy)
+- [vLLM](https://github.com/vllm-project/vllm)
