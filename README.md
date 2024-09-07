@@ -13,7 +13,6 @@
 <p align="center">
     <a href="#-about">🎙️About</a> •
     <a href="#-quick-start">🔥Quick Start</a> •
-    <a href="#-failure-inspection">🔍Failure Inspection</a> •
     <a href="#-full-script">🚀Full Script</a> •
     <a href="#-result-analysis">📊Result Analysis</a> •
     <a href="#-llm-generated-code">💻LLM-generated Code</a> •
@@ -33,7 +32,7 @@
 
 ### ConvCodeWorld
 
-ConvCodeWorld is a controllable environment that ...
+ConvCodeWorld is a reproducible world that supports diverse feedback combination for conversational code generation.
 
 ### Why ConvCodeWorld?
 
@@ -41,7 +40,7 @@ ConvCodeWorld focuses on the evaluation of ...
 
 ### ConvCodeBench
 
-ConvCodeBench is a static version of ConvCodeWorld, ...
+ConvCodeBench is a cost-effective benchmark that strongly correlates to ConvCodeWorld.
 
 ### Why ConvCodeWorld?
 
@@ -53,7 +52,7 @@ ConvCodeBench is cheaper...
 
 ## 🔥 Quick Start
 
-To get started, please first set up the environment:
+To get started, please first set up the environments:
 
 ### Install MiniConda
 ```bash
@@ -93,25 +92,44 @@ The default setting is to use `bfloat16` and to occupy a single GPU.
 If you want to use quantization, you can simply include `--quantization="fp8"` in `run_vllm.sh`.
 Similarly, if you want to use `n` gpus, you can include: `--tensor-parallel-size n`.
 
-## 🔍 Failure Inspection
-
-You can inspect the failed samples by using the following command:
-
-```bash
-# Inspect the failed samples and save the results to `inspect/`
-bigcodebench.inspect --eval_results sample-sanitized-calibrated_eval_results.json --split complete --subset hard
-
-# Re-run the inspection in place
-bigcodebench.inspect --eval_results sample-sanitized-calibrated_eval_results.json --split complete --subset hard --in_place
-```
 
 ## 🚀 Full Script
 
-We provide a sample script to run the full pipeline:
+### ConvCodeWorld
+ To run ConvCodeWorld, we provide a sample script for the full pipeline: 
+```bash
+bash run_convcodeworld.sh $MODEL_NAME $EXECUTION_FEEDBACK $PARTIAL_TEST $SIMULATED_USER_FEEDBACK $USER_EXPERTISE
+```
+- `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+- `EXECUTION_FEEDBACK` (`true` or `false`): `true` if employ execution feedback. 
+- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if test coverage is low (using only public test cases). `none` if `EXECUTION_FEEDBACK` is `false`. 
+- `SIMULATED_USER_FEEDBACK` (`true` or `false`): `true` if employ user feedback simulation by GPT-4o. 
+- `USER_EXPERTISE` (`novice`, `expert`, or `none`): User expertise for simulated user feedback. `none` if `SIMULATED_USER_FEEDBACK` is `false`. 
+
+Note that compilation feedback is always included.
+
+#### Example
+If you want to run `deepseek-ai/deepseek-coder-6.7b-instruct` while feeding execution feedback with high test coverage and novice-level user feedback:
+```bash
+bash run_convcodeworld.sh deepseek-ai/deepseek-coder-6.7b-instruct true false true novice
+```
+ 
+
+### ConvCodeBench
+To run ConvCodeBench, we also provide a sample script as follows: 
 
 ```bash
-bash run.sh
+bash run_convcodebench.sh $MODEL_NAME $EXECUTION_FEEDBACK $PARTIAL_TEST $SIMULATED_USER_FEEDBACK $USER_EXPERTISE $REF_MODEL_NAME
 ```
+- `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+- `EXECUTION_FEEDBACK` (`true` or `false`): `true` if employ execution feedback. 
+- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if test coverage is low (using only public test cases). `none` if `EXECUTION_FEEDBACK` is `false`. 
+- `SIMULATED_USER_FEEDBACK` (`true` or `false`): `true` if employ user feedback simulation by GPT-4o. 
+- `USER_EXPERTISE` (`novice`, `expert`, or `none`): User expertise for simulated user feedback. `none` if `SIMULATED_USER_FEEDBACK` is `false`. 
+- `REF_MODEL_NAME`: The reference model name. We recommend `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+
+
+
 
 ## 📊 Result Analysis
 
