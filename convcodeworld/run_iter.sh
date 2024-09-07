@@ -1,10 +1,10 @@
 #!/bin/bash
 eval "$(conda shell.bash hook)"
 
-CCB_VERSION=v0.3.6
+CCW_VERSION=v0.3.6
 MODEL_NAME=$1
 EF=$2
-UNIT_TEST=$3
+PARTIAL_TEST=$3
 SUF=$4
 USER_EXPERTISE=$5
 
@@ -12,10 +12,9 @@ USER_EXPERTISE=$5
 eval "$(conda shell.bash hook)"
 
 model_name=${MODEL_NAME}
-version=${CCB_VERSION}
+version=${CCW_VERSION}
 simulator_name=gpt-4o
-#save_dir=results
-save_dir=/vault/secrets
+save_dir=results
 
 conda activate bigcodebench
 cd bigcodebench
@@ -26,7 +25,7 @@ cd ..
 option="CF"
 if [ $EF = 'true' ]; then
   option=${option}"_EF"
-  if [ $UNIT_TEST = 'true' ]; then
+  if [ $PARTIAL_TEST = 'true' ]; then
     option=${option}"_UNIT"
   else
     option=${option}"_FULL"
@@ -45,8 +44,8 @@ fi
 
 for i in {1..10..1}
 do
-  conda activate ConvCodeBench
-  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${UNIT_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir
+  conda activate ConvCodeWorld
+  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${PARTIAL_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir
 
   conda activate bigcodebench
   cd bigcodebench
