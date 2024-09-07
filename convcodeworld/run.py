@@ -128,7 +128,7 @@ def run(lm, fn, dataset, generate_answer_signature,
 
         log = None
         try:
-            log = lm.inspect_history(n= _result['iteration'])
+            log = lm.inspect_history(n=1)
         except AttributeError as e:
             print(e)
 
