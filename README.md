@@ -35,7 +35,7 @@
 
 
 
-ConvCodeWorld is a novel, reproducible environment designed to assess the multi-turn code generation capabilities of LLMs. 
+ConvCodeWorld provides novel, reproducible environments designed to assess the multi-turn code generation capabilities of LLMs. 
 This environment incorporates a comprehensive categorization of feedback types that reflect diverse real-world programming scenarios. 
 
 ### Available Feedback Types
