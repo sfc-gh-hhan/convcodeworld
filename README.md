@@ -53,7 +53,6 @@ This environment incorporates a comprehensive categorization of feedback types t
   - **Novice User Feedback** simulates interactions with users who can identify issues but may not know how to fix them.
   - **Expert User Feedback** represents guidance from experienced programmers who can provide specific suggestions for code improvement. 
 
-<br>
 
 ---
 <p align="center">
