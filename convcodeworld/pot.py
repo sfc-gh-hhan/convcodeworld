@@ -672,11 +672,9 @@ class ProgramOfThought(Module):
                 break
         except Exception as e:
             print(e)
-            return {"final_generated_code": input_kwargs["previous_code"],
-                    "compilation_feedback": compilation_feedback,
-                    "execution_feedback": execution_feedback,
-                    "user_feedback": simulated_user_feedback,
-                    "iteration": hop}
+            traceback.print_exc()
+            exit()
+
 
         code, error = self.parse_code(code_data)
         # answer_gen_result = self.generate_answer(**input_kwargs)
