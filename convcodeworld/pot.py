@@ -649,10 +649,16 @@ class ProgramOfThought(Module):
                                     continue
                             elif self.user_expertise == 'expert':
                                 # print(input_kwargs)
-                                code_data = self.code_regenerate_from_user_feedback(**input_kwargs)
+                                try:
+                                    code_data = self.code_regenerate_from_user_feedback(**input_kwargs)
+                                except AssertionError as e:
+                                    code_data = code
                             elif self.user_expertise == 'novice':
                                 if compilation_feedback not in [None, NO_SYNTAX_ERRORS]:
-                                    code_data = self.code_regenerate_from_user_feedback(**input_kwargs)
+                                    try:
+                                        code_data = self.code_regenerate_from_user_feedback(**input_kwargs)
+                                    except AssertionError as e:
+                                        code_data = code
                                 else:
                                     exit_flag = True
                         except AttributeError as e:
