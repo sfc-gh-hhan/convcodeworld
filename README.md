@@ -51,8 +51,8 @@ This environment incorporates a comprehensive categorization of feedback types t
 
 - **Compilation Feedback** indicates whether the code compiles successfully or provides error messages.
 - **Execution Feedback**  assesses the code's runtime behavior, further divided into:
-  - **Low Test Coverage**: feedback based on a limited set of test cases
-  - **High Test Coverage**: comprehensive feedback covering all test cases, including edge cases
+  - **Full Test Coverage**: when annotated test cases manage near complete test coverage (average branch coverage of 99%) including edge cases
+  - **Partial Test Coverage**: practical settings that only a part of test cases is available 
 - **Simulated User Feedback**: To ensure a controllable & reproducible feedback, we employ GPT-4o to simulate user feedback, categorized by expertise:
   - **Novice User Feedback** simulates interactions with users who can identify issues but may not know how to fix them.
   - **Expert User Feedback** represents guidance from experienced programmers who can provide specific suggestions for code improvement. 
@@ -130,14 +130,14 @@ bash run_convcodeworld.sh $MODEL_NAME $EXECUTION_FEEDBACK $PARTIAL_TEST $SIMULAT
 ```
 - `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
 - `EXECUTION_FEEDBACK` (`true` or `false`): `true` if employ execution feedback. 
-- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if test coverage is low (using only public test cases). `none` if `EXECUTION_FEEDBACK` is `false`. 
+- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if only a part of test cases is available. `none` if `EXECUTION_FEEDBACK` is `false`. 
 - `SIMULATED_USER_FEEDBACK` (`true` or `false`): `true` if employ user feedback simulation by GPT-4o. 
 - `USER_EXPERTISE` (`novice`, `expert`, or `none`): User expertise for simulated user feedback. `none` if `SIMULATED_USER_FEEDBACK` is `false`. 
 
 Note that compilation feedback is always included.
 
 #### Example
-If you want to run `deepseek-ai/deepseek-coder-6.7b-instruct` while feeding execution feedback with high test coverage and novice-level user feedback:
+If you want to run `deepseek-ai/deepseek-coder-6.7b-instruct` while feeding execution feedback with full test cases and novice-level user feedback:
 ```bash
 bash run_convcodeworld.sh deepseek-ai/deepseek-coder-6.7b-instruct true false true novice
 ```
@@ -151,7 +151,7 @@ bash run_convcodebench.sh $MODEL_NAME $EXECUTION_FEEDBACK $PARTIAL_TEST $SIMULAT
 ```
 - `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
 - `EXECUTION_FEEDBACK` (`true` or `false`): `true` if employ execution feedback. 
-- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if test coverage is low (using only public test cases). `none` if `EXECUTION_FEEDBACK` is `false`. 
+- `PARTIAL_TEST` (`true`, `false`, or `none`): `true` if only a part of test cases is available. `none` if `EXECUTION_FEEDBACK` is `false`. 
 - `SIMULATED_USER_FEEDBACK` (`true` or `false`): `true` if employ user feedback simulation by GPT-4o. 
 - `USER_EXPERTISE` (`novice`, `expert`, or `none`): User expertise for simulated user feedback. `none` if `SIMULATED_USER_FEEDBACK` is `false`. 
 - `REF_MODEL_NAME`: The reference model name. We recommend `deepseek-ai/deepseek-coder-6.7b-instruct`.  
