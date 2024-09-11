@@ -9,13 +9,13 @@ from prettytable import PrettyTable
 from run import get_generation_results_fn, get_compact_gen_results_fn
 from azure_open_ai import AZURE_OPENAI_MODEL_LIST
 
-METHODS = ["w/ CF EF (partial TCs)",
-           "w/ CF EF (full TCs)",
-           "w/ CF EF (partial TCs) SNF",
+METHODS = ["w/ CF EF (full TCs)",
+           "w/ CF EF (partial TCs)",
            "w/ CF EF (full TCs) SNF",
+           "w/ CF EF (partial TCs) SNF",
            "w/ CF SEF",
-           "w/ CF EF (partial TCs) SEF",
-           "w/ CF EF (full TCs) SEF"]
+           "w/ CF EF (full TCs) SEF",
+           "w/ CF EF (partial TCs) SEF"]
 
 
 def get_keys(results):
