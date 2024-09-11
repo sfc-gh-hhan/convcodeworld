@@ -342,6 +342,8 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
     headers = []
     mrr_rows = ["MRR"]
     recall_rows = ["Recall"]
+    if option == 'static':
+        recall_rows = ["C-Recall"]
     for method in methods:
         if method not in mrr_results_dict.keys():
             continue
@@ -356,7 +358,7 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
     print(table)
     table_caption = f"Table 2. MRR and Recall results of {model_name} on ConvCodeWorld."
     if option == 'static':
-        table_caption = f"Table 2. MRR and Recall results of {model_name} on ConvCodeBench (ref. model: {ref_model_name})."
+        table_caption = f"Table 2. MRR and C-Recall results of {model_name} on ConvCodeBench (ref. model: {ref_model_name})."
     print(table_caption)
     print()
 

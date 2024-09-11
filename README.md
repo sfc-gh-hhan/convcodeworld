@@ -175,7 +175,6 @@ python print_results.py --option live --model_name $MODEL_NAME --save_dir $SAVE_
 #### Evaluation Example
 ```
 $ python print_results.py --option live --model_name deepseek-ai/deepseek-coder-6.7b-instruct
-
 +------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
 | Turn | w/ CF EF (partial TCs) | w/ CF EF (full TCs) | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
 +------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
@@ -205,7 +204,6 @@ Table 1. Pass@1 results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeW
 |  Recall |          37.7          |         37.5        |                 43.3                |               48.2               |        82.8        |                 82.5                |               83.1               |
 +---------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
 Table 2. MRR and Recall results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeWorld.
-
 ```
 
 ### ConvCodeBench
@@ -241,14 +239,13 @@ Table 1. Pass@1 results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBench for 
  - SNF: Simulated Novice Feedback
  - SEF: Simulated Expert Feedback
 
-+---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
-| Metrics | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
-+---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
-|   MRR   |                 52.6                |               54.7               |        62.6        |                 64.5                |               65.3               |
-|  Recall |                 56.4                |               62.0               |        85.9        |                 87.8                |               88.2               |
-+---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
-Table 2. MRR and Recall results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBench (ref. model: deepseek-ai/deepseek-coder-6.7b-instruct).
-
++----------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+| Metrics  | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
++----------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+|   MRR    |                 52.6                |               54.7               |        62.6        |                 64.5                |               65.3               |
+| C-Recall |                 56.4                |               62.0               |        85.9        |                 87.8                |               88.2               |
++----------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+Table 2. MRR and C-Recall results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBench (ref. model: deepseek-ai/deepseek-coder-6.7b-instruct).
 ```
 
 
