@@ -397,7 +397,7 @@ if __name__ == '__main__':
     parser.add_argument("--simulator_name", type=str, default='gpt-4o')
     parser.add_argument("--ref_model_name", type=str, default='gpt-4-0613')
     parser.add_argument("--option", type=str, default='all')
-    parser.add_argument("--compensate_init", type=lambda x: (str(x).lower() != 'true'), default=True)
+    parser.add_argument("--compensate_init", type=lambda x: (str(x).lower() == 'true'), default=True)
 
     args = parser.parse_args()
 

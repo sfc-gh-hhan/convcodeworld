@@ -38,3 +38,9 @@ def get_azure_lm(_model_name):
                           api_version=api_version, model=model_name, max_tokens=2048, stop=["\n\n---\n\n"])
 
     return lm
+
+def get_openai_lm(model_name):
+    keys = load_api(".api_key")
+    lm = dspy.OpenAI(model=model_name, api_key=keys[0], max_tokens=2048, stop=["\n\n---\n\n"])
+
+    return lm

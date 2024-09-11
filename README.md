@@ -17,7 +17,7 @@
     <a href="#-about">🎙️About</a> •
     <a href="#-quick-start">🔥Quick Start</a> •
     <a href="#-full-script">🚀Full Script</a> •
-    <a href="#-result-analysis">📊Result Analysis</a> •
+    <a href="#-result-analysis">📊Evaluation</a> •
     <a href="#-llm-generated-code">💻LLM-generated Code</a> •
     <a href="#-known-issues">🐞Known Issues</a> •
     <a href="#-citation">📜Citation</a> •
@@ -254,10 +254,10 @@ Table 2. MRR and Recall results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBe
 
 ## 💻 LLM-generated Code
 
-We share pre-generated code samples from LLMs we have [evaluated]().
+We will share generated code samples from LLMs we have evaluated.
 
 ## 🐞 Known Issues
--  [Due to the flakiness in the evaluation](https://github.com/bigcode-project/bigcodebench?tab=readme-ov-file#-known-issues), the execution results may vary slightly (~0.2% for Full set, and ~0.6% for Hard set) between runs. 
+-  [Due to the flakiness in the evaluation](https://github.com/bigcode-project/bigcodebench?tab=readme-ov-file#-known-issues), the execution results may vary slightly (~0.2% for Full set, and ~0.6% for Hard set) between runs.
 
 ## 📜 Citation
 

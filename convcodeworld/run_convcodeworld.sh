@@ -45,7 +45,7 @@ fi
 for i in {1..10..1}
 do
   conda activate ConvCodeWorld
-  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${PARTIAL_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir
+  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${PARTIAL_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir --is_azure false
 
   conda activate bigcodebench
   cd bigcodebench

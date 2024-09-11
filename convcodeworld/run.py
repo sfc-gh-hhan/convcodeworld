@@ -5,7 +5,7 @@ from dataset import BigCodeBench
 from pot import ProgramOfThought
 from tqdm import tqdm
 import argparse
-from azure_open_ai import get_azure_lm, AZURE_OPENAI_MODEL_LIST
+from azure_open_ai import get_azure_lm, get_openai_lm, AZURE_OPENAI_MODEL_LIST
 import subprocess
 
 def run_execution(command, run_dir="bigcodebench", env_name="bigcodebench"):
@@ -156,17 +156,23 @@ def run(lm, fn, dataset, generate_answer_signature,
 
 def main(model_name, save_dir, dataset_name, compilation_feedback, execution_feedback, simulated_user_feedback,
          raw_code_generation, use_generated_code, generated_code_path, cheating, user_feedback_simulator_name,
-         user_expertise, unit_test, iteration, version, option, ref_model_name, ref_generated_code_path):
+         user_expertise, unit_test, iteration, version, option, ref_model_name, ref_generated_code_path, is_azure):
 
     if model_name in AZURE_OPENAI_MODEL_LIST:
-        lm = get_azure_lm(model_name)
+        if is_azure:
+            lm = get_azure_lm(model_name)
+        else:
+            lm = get_openai_lm(model_name)
     else:
         lm = dspy.HFClientVLLM(model=model_name, port=7777, url="http://localhost", max_tokens=2048, stop=["\n\n---\n\n"])
 
     if user_feedback_simulator_name in [None, model_name]:
         user_feedback_simulator = lm
     elif user_feedback_simulator_name in AZURE_OPENAI_MODEL_LIST:
-        user_feedback_simulator = get_azure_lm(user_feedback_simulator_name)
+        if is_azure:
+            user_feedback_simulator = get_azure_lm(user_feedback_simulator_name)
+        else:
+            user_feedback_simulator = get_openai_lm(user_feedback_simulator_name)
     else:
         user_feedback_simulator = dspy.HFClientVLLM(model=user_feedback_simulator_name, port=7777, url="http://localhost",
                                                     max_tokens=2048, stop=["\n\n---\n\n"])
@@ -301,6 +307,7 @@ if __name__ == '__main__':
     parser.add_argument("--option", type=str, default='live')
     parser.add_argument("--ref_model_name", type=str, default=None)
     parser.add_argument("--ref_generated_code_path", type=str, default=None)
+    parser.add_argument("--is_azure", type=lambda x: (str(x).lower() == 'true'), default=True)
 
 
     args = parser.parse_args()
@@ -309,7 +316,6 @@ if __name__ == '__main__':
     assert args.option in ['live', 'static']
     if args.option == 'static':
         assert args.ref_model_name is not None
-
 
     main(**args.__dict__)
 
