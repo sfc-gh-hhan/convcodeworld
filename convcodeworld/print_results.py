@@ -389,7 +389,7 @@ if __name__ == '__main__':
     parser.add_argument("--model_name", type=str, default='deepseek-ai/deepseek-coder-6.7b-instruct')
     parser.add_argument("--save_dir", type=str, default='results')
     parser.add_argument("--dataset_name", type=str, default='bigcodebench')
-    parser.add_argument("--version", type=str, default=None)
+    parser.add_argument("--version", type=str, default='v0.3.6')
     parser.add_argument("--max_iteration", type=int, default=10,
                         help="Number of user feedback iterations.")
     parser.add_argument("--simulator_name", type=str, default='gpt-4o')

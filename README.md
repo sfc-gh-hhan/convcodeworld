@@ -4,10 +4,13 @@
 </center>
 
 <p align="center">
-    <a href="https://huggingface.co/spaces/bigcode/bigcodebench-leaderboard"><img src="https://img.shields.io/badge/🤗&nbsp&nbsp%F0%9F%8F%86-leaderboard-%23ff8811"></a>
-    <a href="https://arxiv.org/abs/2406.15877"><img src="https://img.shields.io/badge/arXiv-2406.15877-b31b1b.svg"></a>
-    <a href="https://pypi.org/project/bigcodebench/"><img src="https://img.shields.io/pypi/v/bigcodebench?color=g"></a>
-    <a href="https://github.com/bigcodebench/bigcodebench/blob/master/LICENSE"><img src="https://img.shields.io/pypi/l/bigcodebench"></a>
+
+[//]: # (    <a href="https://huggingface.co/spaces/bigcode/bigcodebench-leaderboard"><img src="https://img.shields.io/badge/🤗&nbsp&nbsp%F0%9F%8F%86-leaderboard-%23ff8811"></a>)
+
+[//]: # (    <a href="https://arxiv.org/abs/2406.15877"><img src="https://img.shields.io/badge/arXiv-2406.15877-b31b1b.svg"></a>)
+
+[//]: # (    <a href="https://pypi.org/project/bigcodebench/"><img src="https://img.shields.io/pypi/v/bigcodebench?color=g"></a>)
+[//]: # (    <a href="https://github.com/bigcodebench/bigcodebench/blob/master/LICENSE"><img src="https://img.shields.io/pypi/l/bigcodebench"></a>)
 </p>
 
 <p align="center">
@@ -22,8 +25,9 @@
 </p>
 
 ## News
-- **[2024-09-XX]** We release ConvCodeWorld, a new benchmark for code generation with 1140 software-engineering-oriented programming tasks. Preprint is available [here](). PyPI package is available [here]() with the version `0.3.6`.
+- **[2024-09-10]** We release ConvCodeWorld, reproducible environments with diverse feedback combination for conversational code generation, and ConvCodeBench, a cost-effective benchmark strongly correlates to ConvCodeWorld.
 
+[//]: # (Preprint is available [here]&#40;&#41;. PyPI package is available [here]&#40;&#41; with the version `0.3.6`.&#40;&#41;)
 ## 🎙️ About
 
 
@@ -82,6 +86,7 @@ To get started, please first set up the environments:
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 chmod +x Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
+export PATH="/home/$USERNAME/miniconda3/bin:$PATH"
 conda install conda-forge::conda-ecosystem-user-package-isolation
 # Restart the kernel
 ```
@@ -154,15 +159,97 @@ bash run_convcodebench.sh $MODEL_NAME $EXECUTION_FEEDBACK $PARTIAL_TEST $SIMULAT
 
 
 
-## 📊 Result Analysis
+## 📊 Evaluation
 
-We provide a script to replicate the analysis like MRR and C-Recall ...
+We provide a script to replicate the MRR and Recall results.
 
-
-To run the analysis, you need to ... 
-
+### ConvCodeWorld
+To print the ConvCodeWorld results: 
 ```bash
-python print_results.py ...
+python print_results.py --option live --model_name $MODEL_NAME --save_dir $SAVE_DIR
+```
+- `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+- `SAVE_DIR`: A directory path where the results are stored. Default is `results`.
+
+
+#### Evaluation Example
+```
+$ python print_results.py --option live --model_name deepseek-ai/deepseek-coder-6.7b-instruct
+
++------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+| Turn | w/ CF EF (partial TCs) | w/ CF EF (full TCs) | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
++------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+|  0   |          35.2          |         35.2        |                 35.2                |               35.2               |        35.2        |                 35.2                |               35.2               |
+|  1   |          36.9          |         36.5        |                 41.1                |               42.8               |        60.0        |                 60.0                |               61.8               |
+|  2   |          37.0          |         36.8        |                 42.4                |               45.7               |        68.4        |                 69.0                |               70.8               |
+|  3   |          37.2          |         37.1        |                 42.8                |               46.8               |        74.4        |                 73.8                |               76.0               |
+|  4   |          37.4          |         37.1        |                 42.9                |               46.9               |        77.5        |                 77.2                |               78.3               |
+|  5   |          37.4          |         37.1        |                 42.9                |               47.6               |        79.0        |                 79.0                |               79.9               |
+|  6   |          37.5          |         37.3        |                 42.8                |               47.6               |        80.7        |                 80.3                |               80.8               |
+|  7   |          37.5          |         37.3        |                 43.0                |               47.7               |        81.7        |                 80.7                |               81.6               |
+|  8   |          37.4          |         37.1        |                 42.8                |               47.8               |        82.2        |                 81.2                |               82.1               |
+|  9   |          37.4          |         37.2        |                 42.9                |               47.6               |        82.5        |                 81.7                |               82.3               |
+|  10  |          37.4          |         37.1        |                 42.9                |               47.7               |        82.7        |                 82.3                |               83.0               |
++------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+Table 1. Pass@1 results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeWorld for each turn.
+ - CF: Compilation Feedback
+ - EF: Execution Feedback
+ - partial|full TCs: Test Cases with partial|full test coverage 
+ - SNF: Simulated Novice Feedback
+ - SEF: Simulated Expert Feedback
+
++---------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+| Metrics | w/ CF EF (partial TCs) | w/ CF EF (full TCs) | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
++---------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+|   MRR   |          36.2          |         36.1        |                 38.8                |               40.5               |        53.3        |                 53.2                |               53.9               |
+|  Recall |          37.7          |         37.5        |                 43.3                |               48.2               |        82.8        |                 82.5                |               83.1               |
++---------+------------------------+---------------------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+Table 2. MRR and Recall results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeWorld.
+
+```
+
+### ConvCodeBench
+To print the ConvCodeBench results: 
+```bash
+python print_results.py --option static --model_name $MODEL_NAME --ref_model_name $REF_MODEL_NAME --save_dir $SAVE_DIR
+```
+- `MODEL_NAME`: A full huggingface name such as `SenseLLM/ReflectionCoder-DS-33B`.  
+- `REF_MODEL_NAME`: A full huggingface name of the reference model such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+- `SAVE_DIR`: A directory path where the results are stored. Default is `results`.
+
+#### Evaluation Example
+```
+$ python print_results.py --option static --model_name SenseLLM/ReflectionCoder-DS-33B --ref_model_name deepseek-ai/deepseek-coder-6.7b-instruct 
++------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+| Turn | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
++------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+|  0   |                 49.6                |               49.6               |        49.6        |                 49.6                |               49.6               |
+|  1   |                 41.8                |               45.2               |        35.2        |                 60.7                |               62.6               |
+|  2   |                 44.3                |               47.5               |        60.2        |                 72.6                |               72.9               |
+|  3   |                 44.1                |               48.8               |        74.5        |                 75.9                |               77.5               |
+|  4   |                 44.8                |               49.4               |        78.8        |                 79.0                |               80.4               |
+|  5   |                 44.6                |               49.8               |        80.3        |                 80.9                |               82.0               |
+|  6   |                 44.6                |               50.3               |        81.7        |                 82.1                |               83.0               |
+|  7   |                 44.8                |               50.3               |        82.7        |                 83.1                |               83.4               |
+|  8   |                 44.8                |               50.6               |        83.3        |                 83.2                |               83.9               |
+|  9   |                 44.6                |               50.3               |        83.2        |                 83.9                |               84.0               |
+|  10  |                 44.8                |               50.6               |        83.8        |                 84.4                |               84.6               |
++------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+Table 1. Pass@1 results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBench for each turn (ref. model: deepseek-ai/deepseek-coder-6.7b-instruct).
+ - CF: Compilation Feedback
+ - EF: Execution Feedback
+ - partial|full TCs: Test Cases with partial|full test coverage 
+ - SNF: Simulated Novice Feedback
+ - SEF: Simulated Expert Feedback
+
++---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+| Metrics | w/ CF EF (partial TCs) SNF (gpt-4o) | w/ CF EF (full TCs) SNF (gpt-4o) | w/ CF SEF (gpt-4o) | w/ CF EF (partial TCs) SEF (gpt-4o) | w/ CF EF (full TCs) SEF (gpt-4o) |
++---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+|   MRR   |                 52.6                |               54.7               |        62.6        |                 64.5                |               65.3               |
+|  Recall |                 56.4                |               62.0               |        85.9        |                 87.8                |               88.2               |
++---------+-------------------------------------+----------------------------------+--------------------+-------------------------------------+----------------------------------+
+Table 2. MRR and Recall results of SenseLLM/ReflectionCoder-DS-33B on ConvCodeBench (ref. model: deepseek-ai/deepseek-coder-6.7b-instruct).
+
 ```
 
 
@@ -171,7 +258,7 @@ python print_results.py ...
 We share pre-generated code samples from LLMs we have [evaluated]().
 
 ## 🐞 Known Issues
-
+-  [Due to the flakiness in the evaluation](https://github.com/bigcode-project/bigcodebench?tab=readme-ov-file#-known-issues), the execution results may vary slightly (~0.2% for Full set, and ~0.6% for Hard set) between runs. 
 
 ## 📜 Citation
 
