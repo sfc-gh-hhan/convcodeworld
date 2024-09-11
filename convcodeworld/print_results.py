@@ -301,6 +301,8 @@ def print_per_turn_results(model_name, version, simulator_name, reported_path, r
     rows = []
     for iteration in range(0, max_iteration + 1):
         row = []
+        if option == 'static' and iteration == 0:
+            continue
         row.append(iteration)
 
         for method in methods:
@@ -360,7 +362,7 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
 
 
 def main(model_name, _save_dir, dataset_name, reported_path, version=None, simulator_name=None,
-              ref_model_name=None, ref_reported_path=None, max_iteration=10, option="all", compensate_init=False):
+         ref_model_name=None, ref_reported_path=None, max_iteration=10, option="all", compensate_init=False):
     assert option in ["live", "static", "all"]
     if option == 'all':
         option_list = ['live', 'static']
@@ -412,13 +414,13 @@ if __name__ == '__main__':
     ref_reported_path = f"bigcodebench/sanitized_calibrated_samples/instruct/{args.ref_model_name.replace('/', '--')}--bigcodebench-instruct--{ref_source}-0-1-sanitized-calibrated_eval_results.json"
 
     main(args.model_name,
-              args.save_dir,
-              args.dataset_name,
-              reported_path,
-              args.version,
-              args.simulator_name,
-              args.ref_model_name,
-              ref_reported_path,
-              args.max_iteration,
-              args.option,
-              args.compensate_init)
+         args.save_dir,
+         args.dataset_name,
+         reported_path,
+         args.version,
+         args.simulator_name,
+         args.ref_model_name,
+         ref_reported_path,
+         args.max_iteration,
+         args.option,
+         args.compensate_init)
