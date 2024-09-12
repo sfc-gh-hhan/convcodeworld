@@ -87,8 +87,9 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 chmod +x Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
 export PATH="/home/$USERNAME/miniconda3/bin:$PATH"
-conda install conda-forge::conda-ecosystem-user-package-isolation
+conda init
 # Restart the kernel
+conda install conda-forge::conda-ecosystem-user-package-isolation -y
 ```
 
 ### Setup Conda Environments

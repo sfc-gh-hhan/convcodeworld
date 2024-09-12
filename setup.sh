@@ -13,7 +13,7 @@ source deactivate
 
 conda create -n vllm python=3.9.19 -y
 conda activate vllm
-pip install vllm
+pip install vllm==0.5.5
 cd convcodeworld
 rm -rf bigcodebench
 git clone https://github.com/sfc-gh-hhan/bigcodebench.git
