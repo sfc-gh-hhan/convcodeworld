@@ -7,6 +7,9 @@ EF=$2
 PARTIAL_TEST=$3
 SUF=$4
 USER_EXPERTISE=$5
+DENYLIST=$6
+DENYLIST_ITER=$7
+
 
 #!/bin/bash
 eval "$(conda shell.bash hook)"
@@ -15,6 +18,8 @@ model_name=${MODEL_NAME}
 version=${CCW_VERSION}
 simulator_name=gpt-4o
 save_dir=results
+denylist=${DENYLIST}
+denylist_iter=${DENYLIST_ITER}
 
 conda activate bigcodebench
 cd bigcodebench
@@ -45,7 +50,7 @@ fi
 for i in {1..10..1}
 do
   conda activate ConvCodeWorld
-  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${PARTIAL_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir --is_azure false
+  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${PARTIAL_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version  --save_dir $save_dir --is_azure false --denylist $denylist --denylist_iter ${denylist_iter}
 
   conda activate bigcodebench
   cd bigcodebench

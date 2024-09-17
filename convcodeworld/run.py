@@ -7,6 +7,7 @@ from tqdm import tqdm
 import argparse
 from azure_open_ai import get_azure_lm, get_openai_lm, AZURE_OPENAI_MODEL_LIST
 import subprocess
+from utils import load_jsonl, dump_jsonl
 
 def run_execution(command, run_dir="bigcodebench", env_name="bigcodebench"):
     command = "\n".join([f"cd {run_dir}",
@@ -72,6 +73,31 @@ def get_compact_gen_results_fn(dataset_name, model_name, compilation_feedback, e
 
     return fn
 
+def commentize_code(path, task_id):
+    prefix = "#### ALREADY COMMENTIZED ####\n"
+    data = load_jsonl(path)
+    code = None
+    for d in data:
+        if d['task_id'] == task_id:
+            code = d['solution']
+    assert code is not None
+
+    if code.split('\n') == prefix:
+        return code
+    return prefix+ "\n".join([f"# {l}" for l in code.split('\n')])
+
+
+def apply_code_to_jsonl(path, task_id, code):
+    data = load_jsonl(path)
+    updated_data = []
+    for d in data:
+        tmp_dict = {key: val for key, val in d.items()}
+        if d['task_id'] == task_id:
+            tmp_dict['solution'] = code
+        updated_data.append(tmp_dict)
+    dump_jsonl(updated_data, path)
+
+
 
 def run(lm, fn, dataset, generate_answer_signature,
         save_dir, dataset_name, compilation_feedback,
@@ -79,7 +105,8 @@ def run(lm, fn, dataset, generate_answer_signature,
          raw_code_generation, use_generated_code,
         generated_code_path, execution_results_path,
         cheating, user_feedback_simulator, user_expertise,
-        unit_test, iteration, generated_feedback_path):
+        unit_test, iteration, generated_feedback_path,
+        denylist, denylist_iter):
     results = {}
     if os.path.exists(f"{save_dir}/{fn}"):
         with open(f"{save_dir}/{fn}", 'r') as fp:
@@ -94,6 +121,26 @@ def run(lm, fn, dataset, generate_answer_signature,
         if task_id in results.keys():
             print(f"{task_id} is already generated in {fn}")
             continue
+        if task_id in denylist and iteration >= denylist_iter:
+            print(f"The lastly generated code of {task_id} ")
+            commentized_code = commentize_code(f"{save_dir}/{fn}", task_id)
+            result = {'task_id': test_example.task_id,
+                      'solution': commentized_code,
+                      'compilation_feedback': None,
+                      'execution_feedback': None,
+                      'user_feedback': None,
+                      'log': "# CRITICAL ERROR WHILE EXECUTING THE GENERATED CODE",
+                      'iteration': iteration,}
+
+            if iteration == denylist_iter:
+                apply_code_to_jsonl(f"{save_dir}/{fn}", task_id, commentized_code)
+            else:
+                with open(f"{save_dir}/{fn}", 'a+') as fp:
+                    json.dump(result, fp)
+                    fp.write('\n')
+            continue
+
+
         # from pot import ProgramOfThought
         # Pass signature to ProgramOfThought Module
         pot = ProgramOfThought(generate_answer_signature,
@@ -156,7 +203,8 @@ def run(lm, fn, dataset, generate_answer_signature,
 
 def main(model_name, save_dir, dataset_name, compilation_feedback, execution_feedback, simulated_user_feedback,
          raw_code_generation, use_generated_code, generated_code_path, cheating, user_feedback_simulator_name,
-         user_expertise, unit_test, iteration, version, option, ref_model_name, ref_generated_code_path, is_azure):
+         user_expertise, unit_test, iteration, version, option, ref_model_name, ref_generated_code_path, is_azure,
+         denylist, denylist_iter):
 
     if model_name in AZURE_OPENAI_MODEL_LIST:
         if is_azure:
@@ -270,7 +318,8 @@ def main(model_name, save_dir, dataset_name, compilation_feedback, execution_fee
         raw_code_generation, use_generated_code,
         generated_code_path, execution_results_path,
         cheating, user_feedback_simulator, user_expertise,
-        unit_test, iteration, generated_feedback_path)
+        unit_test, iteration, generated_feedback_path,
+        denylist, denylist_iter)
 
     # run_execution(command=f"./eval_single_dspy_result.sh ../{save_dir}/{fn}", run_dir='bigcodebench', env_name='bigcodebench')
 
@@ -308,7 +357,11 @@ if __name__ == '__main__':
     parser.add_argument("--ref_model_name", type=str, default=None)
     parser.add_argument("--ref_generated_code_path", type=str, default=None)
     parser.add_argument("--is_azure", type=lambda x: (str(x).lower() == 'true'), default=True)
-
+    parser.add_argument("--denylist", type=str, default=None,
+                        help="A list of task ids to skip the experiment. Split by commas. \
+                              Use this if the generated code of that id incurs undesirable effects such as termination of the experiment, damage to the environment, etc.")
+    parser.add_argument("--denylist_iter", type=str, default=None,
+                        help="A list of iteration numbers for denylist to skip the experiment. Split by commas.")
 
     args = parser.parse_args()
     print(args)
@@ -316,6 +369,16 @@ if __name__ == '__main__':
     assert args.option in ['live', 'static']
     if args.option == 'static':
         assert args.ref_model_name is not None
+
+    if args.denylist is not None:
+        args.denylist = args.denylist.split(',')
+        args.denylist_iter = [int(d_iter) for d_iter in args.denylist_iter.split(',')]
+        tmp_indices = [i for i, d_iter in enumerate(args.denylist_iter) if d_iter <= args.iteration]
+        args.denylist = [task_id for i, task_id in args.denylist if i in tmp_indices]
+        args.denylist_iter = [d_iter for i, d_iter in args.denylist_iter if i in tmp_indices]
+    else:
+        args.denylist = []
+        args.denylist_iter = []
 
     main(**args.__dict__)
 

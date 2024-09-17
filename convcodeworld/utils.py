@@ -17,6 +17,13 @@ def load_jsonl(path):
             data.append(json.loads(line))
     return data
 
+def dump_jsonl(data, path):
+    with open(path, 'w') as fp:
+        for d in data:
+            json.dump(d, fp)
+            fp.write('\n')
+
+
 def dump_pkl(data, path):
     with open(path, "wb") as fp:
         pickle.dump(data, fp, pickle.HIGHEST_PROTOCOL)
