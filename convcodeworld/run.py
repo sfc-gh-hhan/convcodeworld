@@ -82,7 +82,7 @@ def commentize_code(path, task_id):
             code = d['solution']
     assert code is not None
 
-    if code.split('\n') == prefix:
+    if code.split('\n')[0] == prefix:
         return code
     return prefix+ "\n".join([f"# {l}" for l in code.split('\n')])
 
@@ -97,6 +97,12 @@ def apply_code_to_jsonl(path, task_id, code):
         updated_data.append(tmp_dict)
     dump_jsonl(updated_data, path)
 
+def get_deny_flag(task_id, iteration, denylist, denylist_iter):
+    for deny_id, deny_iter in zip(denylist, denylist_iter):
+        if task_id == deny_id and iteration >= deny_iter:
+            return True, iteration == deny_iter
+    else:
+        return False, False
 
 
 def run(lm, fn, dataset, generate_answer_signature,
@@ -118,10 +124,15 @@ def run(lm, fn, dataset, generate_answer_signature,
 
     for test_example in tqdm(dataset.test):
         task_id = test_example.task_id
+        deny_flag, is_deny_iter_now = get_deny_flag(task_id, iteration, denylist, denylist_iter)
         if task_id in results.keys():
-            print(f"{task_id} is already generated in {fn}")
-            continue
-        if task_id in denylist and iteration >= denylist_iter:
+            if deny_flag:
+                pass
+            else:
+                print(f"{task_id} is already generated in {fn}")
+                continue
+        
+        if deny_flag:
             print(f"The lastly generated code of {task_id} ")
             commentized_code = commentize_code(f"{save_dir}/{fn}", task_id)
             result = {'task_id': test_example.task_id,
@@ -131,8 +142,8 @@ def run(lm, fn, dataset, generate_answer_signature,
                       'user_feedback': None,
                       'log': "# CRITICAL ERROR WHILE EXECUTING THE GENERATED CODE",
                       'iteration': iteration,}
-
-            if iteration == denylist_iter:
+            
+            if is_deny_iter_now:
                 apply_code_to_jsonl(f"{save_dir}/{fn}", task_id, commentized_code)
             else:
                 with open(f"{save_dir}/{fn}", 'a+') as fp:
@@ -364,21 +375,21 @@ if __name__ == '__main__':
                         help="A list of iteration numbers for denylist to skip the experiment. Split by commas.")
 
     args = parser.parse_args()
-    print(args)
 
     assert args.option in ['live', 'static']
     if args.option == 'static':
         assert args.ref_model_name is not None
 
-    if args.denylist is not None:
+    if args.denylist is not None and args.denylist.lower() != 'none':
         args.denylist = args.denylist.split(',')
         args.denylist_iter = [int(d_iter) for d_iter in args.denylist_iter.split(',')]
         tmp_indices = [i for i, d_iter in enumerate(args.denylist_iter) if d_iter <= args.iteration]
-        args.denylist = [task_id for i, task_id in args.denylist if i in tmp_indices]
-        args.denylist_iter = [d_iter for i, d_iter in args.denylist_iter if i in tmp_indices]
+        args.denylist = [task_id for i, task_id in enumerate(args.denylist) if i in tmp_indices]
+        args.denylist_iter = [d_iter for i, d_iter in enumerate(args.denylist_iter) if i in tmp_indices]
     else:
         args.denylist = []
         args.denylist_iter = []
+    print(args)
 
     main(**args.__dict__)
 
