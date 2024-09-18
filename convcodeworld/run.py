@@ -134,7 +134,11 @@ def run(lm, fn, dataset, generate_answer_signature,
         
         if deny_flag:
             print(f"The lastly generated code of {task_id} ")
-            commentized_code = commentize_code(f"{save_dir}/{fn}", task_id)
+            if is_deny_iter_now:
+                commentized_code = commentize_code(f"{save_dir}/{fn}", task_id)
+            else:
+                commentized_code = commentize_code(generated_code_path, task_id)
+                
             result = {'task_id': test_example.task_id,
                       'solution': commentized_code,
                       'compilation_feedback': None,
