@@ -1,6 +1,6 @@
 import dspy
 
-AZURE_OPENAI_MODEL_LIST = ["gpt-4o", "gpt-4-turbo-2024-04-09", "gpt-4-0613", "gpt-35-turbo-0613", "gpt-35-turbo-instruct-0914"]
+AZURE_OPENAI_MODEL_LIST = ["gpt-4o", "gpt-4-turbo-2024-04-09", "gpt-4-0613", "gpt-4o-mini", "gpt-35-turbo-0613", "gpt-35-turbo-instruct-0914"]
 
 def load_api(path: str):
     api_keys = []
@@ -20,6 +20,9 @@ def get_azure_name(model_name):
     elif model_name == "gpt-4-0613":
         # Model version: 0613
         return "sfc-ml-sweden-gpt4-managed"
+    elif model_name == "gpt-4o-mini":
+        # Model version: 2024-07-18
+        return "cortex-analyst-gpt-4o-mini-dev"
     elif model_name == "gpt-35-turbo-0613":
         return "sfc-ml-sweden-gpt35-chat-deployment"
     elif model_name == "gpt-35-turbo-instruct-0914":

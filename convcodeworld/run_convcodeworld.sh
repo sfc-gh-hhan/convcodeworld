@@ -21,7 +21,7 @@ save_dir=results
 denylist=${DENYLIST}
 denylist_iter=${DENYLIST_ITER}
 
-OPENAI_MODEL_LIST=("gpt-4o" "gpt-4-turbo-2024-04-09" "gpt-4-0613" "gpt-35-turbo-0613" "gpt-35-turbo-instruct-0914")
+OPENAI_MODEL_LIST=("gpt-4o" "gpt-4-turbo-2024-04-09" "gpt-4-0613" "gpt-4o-mini" "gpt-35-turbo-0613" "gpt-35-turbo-instruct-0914")
 
 if [[ " ${OPENAI_MODEL_LIST[@]} " =~ " ${model_name} " ]]; then
   gen_option=openai
