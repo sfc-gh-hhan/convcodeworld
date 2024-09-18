@@ -21,9 +21,18 @@ save_dir=results
 denylist=${DENYLIST}
 denylist_iter=${DENYLIST_ITER}
 
+OPENAI_MODEL_LIST=("gpt-4o" "gpt-4-turbo-2024-04-09" "gpt-4-0613" "gpt-35-turbo-0613" "gpt-35-turbo-instruct-0914")
+
+if [[ " ${OPENAI_MODEL_LIST[@]} " =~ " ${model_name} " ]]; then
+  gen_option=openai
+else
+  gen_option=vllm
+fi
+
+
 conda activate bigcodebench
 cd bigcodebench
-gen_path=sanitized_calibrated_samples/instruct/${model_name//\//--}--bigcodebench-instruct--vllm-0-1-sanitized-calibrated.jsonl
+gen_path=sanitized_calibrated_samples/instruct/${model_name//\//--}--bigcodebench-instruct--${gen_option}-0-1-sanitized-calibrated.jsonl
 ./eval_single_dspy_result.sh $gen_path
 cd ..
 
