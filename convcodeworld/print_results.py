@@ -9,13 +9,15 @@ from prettytable import PrettyTable
 from run import get_generation_results_fn, get_compact_gen_results_fn
 from azure_open_ai import AZURE_OPENAI_MODEL_LIST
 
-METHODS = ["w/ CF EF (full TCs)",
-           "w/ CF EF (partial TCs)",
-           "w/ CF EF (full TCs) SNF",
-           "w/ CF EF (partial TCs) SNF",
+METHODS = ["w/ CF",
+           "w/ CF EF (partial TC)",
+           "w/ CF EF (full TC)",
+           "w/ CF SNF",
+           "w/ CF EF (partial TC) SNF",
+           "w/ CF EF (full TC) SNF",
            "w/ CF SEF",
-           "w/ CF EF (full TCs) SEF",
-           "w/ CF EF (partial TCs) SEF"]
+           "w/ CF EF (partial TC) SEF",
+           "w/ CF EF (full TC) SEF"]
 
 
 def get_keys(results):
@@ -168,9 +170,9 @@ def get_configs(model_name, _save_dir, dataset_name, version, simulator_name, re
                             if EF:
                                 key += " EF"
                                 if UNIT_TEST:
-                                    key += " (partial TCs)"
+                                    key += " (partial TC)"
                                 else:
-                                    key += " (full TCs)"
+                                    key += " (full TC)"
                             if SUF:
                                 if USER_EXPERTISE == 'novice':
                                     key += " SNF"
@@ -178,8 +180,8 @@ def get_configs(model_name, _save_dir, dataset_name, version, simulator_name, re
                                     key += " SEF"
                                 else:
                                     raise NotImplementedError
-                                if model_name != simulator_name:
-                                    key += f" ({simulator_name.split('/')[-1]})"
+                                # if model_name != simulator_name:
+                                #     key += f" ({simulator_name.split('/')[-1]})"
                                 if CHEATING:
                                     key += " (Cheating)"
 
@@ -226,7 +228,7 @@ def get_configs(model_name, _save_dir, dataset_name, version, simulator_name, re
     return configs, ref_configs
 
 
-def get_results_dict(model_name, configs, ref_configs, max_iteration, option, compensate_init):
+def get_results_dict(model_name, reported_path, ref_reported_path, configs, ref_configs, max_iteration, option, compensate_init):
     mrr_results_dict, recall_results_dict = {}, {}
     eval_results_dict, ref_eval_results_dict = {}, {}
 
@@ -287,13 +289,13 @@ def get_results_dict(model_name, configs, ref_configs, max_iteration, option, co
     return mrr_results_dict, recall_results_dict, eval_results_dict, ref_eval_results_dict
 
 
-def print_per_turn_results(model_name, version, simulator_name, reported_path, ref_model_name, option, max_iteration,
+def print_per_turn_results(model_name, version, simulator_name, reported_path, ref_model_name, ref_reported_path, option, max_iteration,
                            eval_results_dict, ref_eval_results_dict):
     methods = copy.deepcopy(METHODS)
-    if model_name != simulator_name:
-        methods = [k + f' ({simulator_name})' if 'SNF' in k or 'SEF' in k else k for k in methods]
+    # if model_name != simulator_name:
+    #     methods = [k + f' ({simulator_name})' if 'SNF' in k or 'SEF' in k else k for k in methods]
     if option == 'static':
-        methods = [k for k in methods if 'SNF' in k or 'SEF' in k]
+        methods = [k for k in methods if ('SNF' in k and 'EF' in k) or 'SEF' in k]
 
     init_results = load_json(reported_path)
     if option == 'static':
@@ -306,6 +308,16 @@ def print_per_turn_results(model_name, version, simulator_name, reported_path, r
         row.append(iteration)
 
         for method in methods:
+            if method in ['w/ CF', 'w/ CF SNF']:
+                if option == 'static':
+                    pass
+                elif method in eval_results_dict.keys():
+                    results = eval_results_dict[method][iteration]
+                    row.append(pass_at_1(results, init_results))
+                else:
+                    assert compilation_success(init_results, init_results) == 100.0, f"{compilation_success(init_results, init_results)}"
+                    row.append(pass_at_1(init_results, init_results))
+                continue
             if method not in eval_results_dict.keys() or iteration >= len(eval_results_dict[method]):
                 row.append('')
                 continue
@@ -327,24 +339,34 @@ def print_per_turn_results(model_name, version, simulator_name, reported_path, r
         table_caption = f"Table 1. Pass@1 results of {model_name} on ConvCodeBench for each turn (ref. model: {ref_model_name})."
     # if version is not None:
     #     table_caption += f" ({version})"
-    table_caption += "\n - CF: Compilation Feedback\n - EF: Execution Feedback\n - partial|full TCs: Test Cases with partial|full test coverage \n - SNF: Simulated Novice Feedback\n - SEF: Simulated Expert Feedback"
+    table_caption += "\n - CF: Compilation Feedback\n - EF: Execution Feedback\n - partial|full TC: test cases with partial|full Test Coverage \n - SNF: Simulated Novice Feedback\n - SEF: Simulated Expert Feedback"
     print(table_caption)
     print()
 
+    return methods, rows
 
-def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_results_dict, recall_results_dict):
+
+def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_results_dict, recall_results_dict, reported_path):
     methods = copy.deepcopy(METHODS)
-    if model_name != simulator_name:
-        methods = [k + f' ({simulator_name})' if 'SNF' in k or 'SEF' in k else k for k in methods]
+    # if model_name != simulator_name:
+    #     methods = [k + f' ({simulator_name})' if 'SNF' in k or 'SEF' in k else k for k in methods]
     if option == 'static':
-        methods = [k for k in methods if 'SNF' in k or 'SEF' in k]
+        methods = [k for k in methods if ('SNF' in k and 'EF' in k) or 'SEF' in k]
 
+    init_results = load_json(reported_path)
     headers = []
     mrr_rows = ["MRR"]
     recall_rows = ["Recall"]
-    if option == 'static':
-        recall_rows = ["C-Recall"]
     for method in methods:
+        if method in ['w/ CF', 'w/ CF SNF']:
+            if option == 'static':
+                pass
+            elif method not in mrr_results_dict.keys():
+                assert compilation_success(init_results, init_results) == 100.0, f"{compilation_success(init_results, init_results)}"
+                headers.append(method)
+                mrr_rows.append(pass_at_1(init_results, init_results))
+                recall_rows.append(pass_at_1(init_results, init_results))
+            continue
         if method not in mrr_results_dict.keys():
             continue
         headers.append(method)
@@ -352,13 +374,13 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
         recall_rows.append(str(round(recall_results_dict[method] * 100, 1)))
 
     table = PrettyTable()
-    table.field_names = ["Metrics"] + methods
+    table.field_names = ["Metrics"] + headers
     table.align = "c"
     table.add_rows([mrr_rows, recall_rows])
     print(table)
     table_caption = f"Table 2. MRR and Recall results of {model_name} on ConvCodeWorld."
     if option == 'static':
-        table_caption = f"Table 2. MRR and C-Recall results of {model_name} on ConvCodeBench (ref. model: {ref_model_name})."
+        table_caption = f"Table 2. MRR and Recall results of {model_name} on ConvCodeBench (ref. model: {ref_model_name})."
     print(table_caption)
     print()
 
@@ -376,16 +398,18 @@ def main(model_name, _save_dir, dataset_name, reported_path, version=None, simul
                                            option)
 
         mrr_results_dict, recall_results_dict, eval_results_dict, ref_eval_results_dict = get_results_dict(model_name,
+                                                                                                           reported_path,
+                                                                                                           ref_reported_path,
                                                                                                            configs,
                                                                                                            ref_configs,
                                                                                                            max_iteration,
                                                                                                            option,
                                                                                                            compensate_init)
 
-        print_per_turn_results(model_name, version, simulator_name, reported_path, ref_model_name, option,
+        print_per_turn_results(model_name, version, simulator_name, reported_path, ref_model_name, ref_reported_path, option,
                                max_iteration, eval_results_dict, ref_eval_results_dict)
 
-        print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_results_dict, recall_results_dict)
+        print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_results_dict, recall_results_dict, reported_path)
 
 
 if __name__ == '__main__':
