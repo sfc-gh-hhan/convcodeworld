@@ -110,6 +110,16 @@ echo $OPENAI_API_KEY > .api_key
 ```
 This is necessary if 1) you run on ConvCodeWorld, or 2) you want to use OpenAI models for code generation.  
 
+### Prepare Initially Generated Code
+```bash
+cd bigcodebench $MODEL_NAME $BACKEND $MAX_MODEL_LEN $QUANTIZATION 
+bash run_initial_code_generation.sh 
+```
+- `MODEL_NAME`: A full model name from huggingface or openai API lists such as `deepseek-ai/deepseek-coder-6.7b-instruct`.
+- `BACKEND` (`vllm`, `openai`, or `azure_openai`): A backend setting for `MODEL_NAME`.  
+- `MAX_MODEL_LEN`: If you leave it empty, then the model's maximum token length would be used. 
+- `QUANTIZATION` (`bfloat16` | `fp8`): Default is `bfloat16`. 
+
 ### Run vLLM 
 If you want to use open-source models for code generation, you need to run: 
 ```bash
@@ -171,18 +181,19 @@ bash run_convcodeworld.sh gpt-4-0613 openai false false true expert codellama/Co
 
 We provide a script to replicate the MRR and Recall results.
 
-### ConvCodeWorld
-To print the ConvCodeWorld results: 
+To print the ConvCodeWorld and ConvCodeBench results: 
 ```bash
-python print_results.py --option live --model_name $MODEL_NAME --save_dir $SAVE_DIR
+bash print_results.sh $OPTION $MODEL_NAME $REF_MODEL_NAME $SAVE_DIR 
 ```
+- `OPTION` (`live` | `static` | `all`): `live` prints ConvCodeWorld results, `static` prints ConvCodeBench results, and `all` prints both results.  
 - `MODEL_NAME`: A full huggingface name such as `deepseek-ai/deepseek-coder-6.7b-instruct`.  
+- `REF_MODEL_NAME`: A full huggingface name of the reference model for ConvCodeBench. Default is `codellama/CodeLlama-7b-Instruct-hf`.  
 - `SAVE_DIR`: A directory path where the results are stored. Default is `results`.
 
 
-#### Evaluation Example
+#### Evaluation Example (ConvCodeWorld)
 ```
-$ python print_results.py --option live --model_name deepseek-ai/deepseek-coder-6.7b-instruct
+$ bash print_results.sh live deepseek-ai/deepseek-coder-6.7b-instruct
 +------+-------+-----------------------+--------------------+-----------+---------------------------+------------------------+-----------+---------------------------+------------------------+
 | Turn | w/ CF | w/ CF EF (partial TC) | w/ CF EF (full TC) | w/ CF SNF | w/ CF EF (partial TC) SNF | w/ CF EF (full TC) SNF | w/ CF SEF | w/ CF EF (partial TC) SEF | w/ CF EF (full TC) SEF |
 +------+-------+-----------------------+--------------------+-----------+---------------------------+------------------------+-----------+---------------------------+------------------------+
@@ -214,18 +225,9 @@ Table 1. Pass@1 results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeW
 Table 2. MRR and Recall results of deepseek-ai/deepseek-coder-6.7b-instruct on ConvCodeWorld.
 ```
 
-### ConvCodeBench
-To print the ConvCodeBench results: 
-```bash
-python print_results.py --option static --model_name $MODEL_NAME --ref_model_name $REF_MODEL_NAME --save_dir $SAVE_DIR
+#### Evaluation Example (ConvCodeBench)
 ```
-- `MODEL_NAME`: A full huggingface name such as `SenseLLM/ReflectionCoder-DS-33B`.  
-- `REF_MODEL_NAME`: A full huggingface name of the reference model such as `codellama/CodeLlama-7b-Instruct-hf`.  
-- `SAVE_DIR`: A directory path where the results are stored. Default is `results`.
-
-#### Evaluation Example
-```
-$ python print_results.py --option static --model_name SenseLLM/ReflectionCoder-DS-33B --ref_model_name codellama/CodeLlama-7b-Instruct-hf
+$ bash print_results.sh static SenseLLM/ReflectionCoder-DS-33B
 +------+---------------------------+------------------------+-----------+---------------------------+------------------------+
 | Turn | w/ CF EF (partial TC) SNF | w/ CF EF (full TC) SNF | w/ CF SEF | w/ CF EF (partial TC) SEF | w/ CF EF (full TC) SEF |
 +------+---------------------------+------------------------+-----------+---------------------------+------------------------+
