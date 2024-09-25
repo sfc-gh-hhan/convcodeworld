@@ -421,7 +421,7 @@ if __name__ == '__main__':
     parser.add_argument("--max_iteration", type=int, default=10,
                         help="Number of user feedback iterations.")
     parser.add_argument("--simulator_name", type=str, default='gpt-4o')
-    parser.add_argument("--ref_model_name", type=str, default='gpt-4-0613')
+    parser.add_argument("--ref_model_name", type=str, default='codellama/CodeLlama-7b-Instruct-hf')
     parser.add_argument("--option", type=str, default='all')
     parser.add_argument("--compensate_init", type=lambda x: (str(x).lower() == 'true'), default=True)
 
