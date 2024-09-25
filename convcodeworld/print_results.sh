@@ -4,14 +4,14 @@ conda activate ConvCodeWorld
 
 OPTION=$1
 MODEL_NAME=$2
-SAVE_DIR=$3
-REF_MODEL_NAME=$4
+REF_MODEL_NAME=$3
+SAVE_DIR=$4
 
-if [ -z "${SAVE_DIR}" ]; then
-  SAVE_DIR="results"
-fi
 if [ -z "${REF_MODEL_NAME}" ]; then
   REF_MODEL_NAME="codellama/CodeLlama-7b-Instruct-hf"
+fi
+if [ -z "${SAVE_DIR}" ]; then
+  SAVE_DIR="results"
 fi
 
 
