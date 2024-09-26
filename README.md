@@ -62,7 +62,7 @@ This environment incorporates a comprehensive categorization of feedback types t
 <p align="center">
 <img src="images/ConvCodeBench_note.png" width="86%" alt="ConvCodeBench">
 <br>
-<img src="images/ConvCodeBench_detail.png" width="100%" alt="ConvCodeBench">
+<img src="images/ConvCodeBench_detail.png" width="80%" alt="ConvCodeBench">
 </p>
 
 
