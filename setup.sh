@@ -31,6 +31,16 @@ pip install -e .
 pip install -r https://raw.githubusercontent.com/bigcode-project/bigcodebench/main/Requirements/requirements-eval.txt
 
 
+conda create -n bigcodebenchgen python=3.9.19 -y
+conda activate bigcodebenchgen
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+pip install -e .
+pip install -e .[generate]
+pip install -U flash-attn
+pip install mistralai
+pip install stop_sequencer
+#pip install rich
+#pip install openai
 
 
 
