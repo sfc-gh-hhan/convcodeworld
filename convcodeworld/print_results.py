@@ -67,11 +67,13 @@ def static_pass_at_1_results(results):
     return pass_results
 
 
-def get_mrr(results_list, ref_results_list, option='live', compensate_init=False):
+def get_mrr(results_list, ref_results_list, option='live', compensate_init=False, exclude_init_solved=False, reported_result=None):
     mrr_results_dict = {}
     init_results = results_list[0]
     if option == 'live':
         for key in get_keys(init_results):
+            if exclude_init_solved and get_pass_fail(init_results, key) == 'pass':
+                continue
             mrr_results_dict[key] = 0
             for i in range(len(results_list)):
                 results = results_list[i]
@@ -81,6 +83,8 @@ def get_mrr(results_list, ref_results_list, option='live', compensate_init=False
     elif option == 'static':
         ref_init_results = ref_results_list[0]
         for key in get_keys(init_results):
+            if exclude_init_solved and get_pass_fail(init_results, key) == 'pass':
+                continue
             mrr_results_dict[key] = 0
             if get_pass_fail(ref_init_results, key) == 'pass':
                 mrr_results_dict[key] = 1.
@@ -99,15 +103,18 @@ def get_mrr(results_list, ref_results_list, option='live', compensate_init=False
                 if get_pass_fail(results, key) == 'pass':
                     mrr_results_dict[key] = 1 / (i + 1)
                     break
-
+    if exclude_init_solved:
+        print(f"{len(mrr_results_dict)}/{len(get_keys(init_results))}")
     return np.mean([mrr for mrr in mrr_results_dict.values()], axis=0)
 
 
-def get_recall(results_list, ref_results_list, option='live', compensate_init=False):
+def get_recall(results_list, ref_results_list, option='live', compensate_init=False, exclude_init_solved=False, reported_result=None):
     recall_results_dict = {}
     init_results = results_list[0]
     if option == 'live':
         for key in get_keys(init_results):
+            if exclude_init_solved and get_pass_fail(init_results, key) == 'pass':
+                continue
             recall_results_dict[key] = 0
             for i in range(len(results_list)):
                 results = results_list[i]
@@ -117,6 +124,8 @@ def get_recall(results_list, ref_results_list, option='live', compensate_init=Fa
     elif option == 'static':
         ref_init_results = ref_results_list[0]
         for key in get_keys(init_results):
+            if exclude_init_solved and get_pass_fail(init_results, key) == 'pass':
+                continue
             recall_results_dict[key] = 0
             if get_pass_fail(ref_init_results, key) == 'pass':
                 recall_results_dict[key] = 1.
@@ -135,7 +144,8 @@ def get_recall(results_list, ref_results_list, option='live', compensate_init=Fa
                 if get_pass_fail(results, key) == 'pass':
                     recall_results_dict[key] = 1.
                     break
-
+    if exclude_init_solved:
+        print(f"{len(recall_results_dict)}/{len(get_keys(init_results))}")
     return np.mean([recall for recall in recall_results_dict.values()], axis=0)
 
 
@@ -228,7 +238,7 @@ def get_configs(model_name, _save_dir, dataset_name, version, simulator_name, re
     return configs, ref_configs
 
 
-def get_results_dict(model_name, reported_path, ref_reported_path, configs, ref_configs, max_iteration, option, compensate_init):
+def get_results_dict(model_name, reported_path, ref_reported_path, configs, ref_configs, max_iteration, option, compensate_init, exclude_init_solved=False):
     mrr_results_dict, recall_results_dict = {}, {}
     eval_results_dict, ref_eval_results_dict = {}, {}
 
@@ -280,9 +290,9 @@ def get_results_dict(model_name, reported_path, ref_reported_path, configs, ref_
 
         if len(eval_results_list) == max_iteration + 1:
             mrr_results_dict[method] = get_mrr(eval_results_list, ref_eval_results_list, option=option,
-                                               compensate_init=compensate_init)
+                                               compensate_init=compensate_init, exclude_init_solved=exclude_init_solved)
             recall_results_dict[method] = get_recall(eval_results_list, ref_eval_results_list, option=option,
-                                                     compensate_init=compensate_init)
+                                                     compensate_init=compensate_init, exclude_init_solved=exclude_init_solved)
             eval_results_dict[method] = eval_results_list
             ref_eval_results_dict[method] = ref_eval_results_list
 
@@ -360,13 +370,13 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
     for method in methods:
         if method in ['w/ CF', 'w/ CF SNF']:
             if option == 'static':
-                pass
+                continue
             elif method not in mrr_results_dict.keys():
                 assert compilation_success(init_results, init_results) == 100.0, f"{compilation_success(init_results, init_results)}"
                 headers.append(method)
                 mrr_rows.append(pass_at_1(init_results, init_results))
                 recall_rows.append(pass_at_1(init_results, init_results))
-            continue
+                continue
         if method not in mrr_results_dict.keys():
             continue
         headers.append(method)
@@ -386,7 +396,7 @@ def print_mrr_recall(model_name, simulator_name, ref_model_name, option, mrr_res
 
 
 def main(model_name, _save_dir, dataset_name, reported_path, version=None, simulator_name=None,
-         ref_model_name=None, ref_reported_path=None, max_iteration=10, option="all", compensate_init=False):
+         ref_model_name=None, ref_reported_path=None, max_iteration=10, option="all", compensate_init=False, exclude_init_solved=False):
     assert option in ["live", "static", "all"]
     if option == 'all':
         option_list = ['live', 'static']
@@ -404,7 +414,8 @@ def main(model_name, _save_dir, dataset_name, reported_path, version=None, simul
                                                                                                            ref_configs,
                                                                                                            max_iteration,
                                                                                                            option,
-                                                                                                           compensate_init)
+                                                                                                           compensate_init,
+                                                                                                           exclude_init_solved)
 
         print_per_turn_results(model_name, version, simulator_name, reported_path, ref_model_name, ref_reported_path, option,
                                max_iteration, eval_results_dict, ref_eval_results_dict)
@@ -424,6 +435,8 @@ if __name__ == '__main__':
     parser.add_argument("--ref_model_name", type=str, default='codellama/CodeLlama-7b-Instruct-hf')
     parser.add_argument("--option", type=str, default='all')
     parser.add_argument("--compensate_init", type=lambda x: (str(x).lower() == 'true'), default=True)
+    parser.add_argument("--exclude_init_solved", type=lambda x: (str(x).lower() == 'true'), default=False)
+    
 
     args = parser.parse_args()
 
@@ -449,4 +462,5 @@ if __name__ == '__main__':
          ref_reported_path,
          args.max_iteration,
          args.option,
-         args.compensate_init)
+         args.compensate_init,
+         args.exclude_init_solved)
