@@ -11,15 +11,18 @@ def load_api(path: str):
     return api_keys
 
 def get_azure_name(model_name):
-    if model_name == "gpt-4o":
+    if model_name in ["gpt-4o", "gpt-4o-2024-05-13"]:
         # Model version: 2024-05-13
         return "sfc-cortex-analyst-dev"
+    elif model_name == "gpt-4o-2024-08-06":
+        return "rajhans-testing-deployment"
     elif model_name == "gpt-4-turbo-2024-04-09":
         # Model version: turbo-2024-04-09
         return "sfc-ml-gpt4-turbo"
     elif model_name == "gpt-4-0613":
         # Model version: 0613
-        return "sfc-ml-sweden-gpt4-managed"
+        # return "sfc-ml-sweden-gpt4-managed"
+        return "sc-merida-dev-copilot"
     elif model_name == "gpt-4o-mini":
         # Model version: 2024-07-18
         return "cortex-analyst-gpt-4o-mini-dev"
@@ -27,6 +30,8 @@ def get_azure_name(model_name):
         return "sfc-ml-sweden-gpt35-chat-deployment"
     elif model_name == "gpt-35-turbo-instruct-0914":
         return "sfc-ml-sweden-gpt35-deployment"
+    elif model_name == "gpt-4-32k":
+        return "sfc-ml-snowpilot-gpt-4-32k"
     else:
         raise NotImplementedError(f"Model {model_name} not implemented")
 
