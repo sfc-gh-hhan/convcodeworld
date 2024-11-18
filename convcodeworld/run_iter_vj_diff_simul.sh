@@ -56,7 +56,7 @@ for i in {1..10..1}
 do
   source /home/yak/miniconda/bin/activate ConvCodeBenchJOB
   #python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback true --simulated_user_feedback true --unit_test true  --iteration $i --version $version
-  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${UNIT_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version --denylist $denylist --denylist_iter ${denylist_iter} --backend $backend --simulator_backend $simulator_backend
+  python run.py --model_name ${model_name} --use_generated_code true --generated_code_path bigcodebench/${gen_path} --compilation_feedback true --execution_feedback $EF --unit_test ${UNIT_TEST} --simulated_user_feedback ${SUF} --user_expertise ${USER_EXPERTISE}  --iteration $i --version $version --denylist $denylist --denylist_iter ${denylist_iter} --backend $backend --simulator_name $simulator_name --simulator_backend $simulator_backend
 
   source /home/yak/miniconda/bin/activate bigcodebenchJOB
   cd bigcodebench
