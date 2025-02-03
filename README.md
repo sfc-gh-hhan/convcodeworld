@@ -25,6 +25,8 @@
 </p>
 
 ## News
+- **[2025-02-03]** We update the [huggingface space 🏠](https://huggingface.co/spaces/ConvCodeWorld/ConvCodeWorld)
+- **[2025-01-22]** ConvCodeWorld has been accepted to ICLR2025 🥳 ([OpenReview 🔗](https://openreview.net/forum?id=rpouyo09V0))
 - **[2024-09-10]** We release ConvCodeWorld, reproducible environments with diverse feedback combination for conversational code generation, and ConvCodeBench, a cost-effective benchmark strongly correlates to ConvCodeWorld.
 
 [//]: # (Preprint is available [here]&#40;&#41;. PyPI package is available [here]&#40;&#41; with the version `0.3.6`.&#40;&#41;)
@@ -269,7 +271,14 @@ We will share generated code samples from LLMs we have evaluated.
 ## 📜 Citation
 
 ```bibtex
-
+@inproceedings{
+han2025convcodeworld,
+title={ConvCodeWorld: Benchmarking Conversational Code Generation in Reproducible Feedback Environments},
+author={Hojae Han and Seung-won Hwang and Rajhans Samdani and Yuxiong He},
+booktitle={The Thirteenth International Conference on Learning Representations},
+year={2025},
+url={https://openreview.net/forum?id=rpouyo09V0}
+}
 ```
 
 ## 🙏 Acknowledgement
