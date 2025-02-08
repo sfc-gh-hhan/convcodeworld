@@ -219,7 +219,7 @@ def run(lm, fn, dataset, generate_answer_signature,
 def main(model_name, save_dir, dataset_name, compilation_feedback, execution_feedback, simulated_user_feedback,
          raw_code_generation, use_generated_code, generated_code_path, cheating, user_feedback_simulator_name,
          user_expertise, unit_test, iteration, version, option, ref_model_name, ref_generated_code_path, backend, simulator_backend,
-         denylist, denylist_iter):
+         denylist, denylist_iter, port_number):
 
     if backend == 'openai':
         lm = get_openai_lm(model_name)
@@ -227,7 +227,7 @@ def main(model_name, save_dir, dataset_name, compilation_feedback, execution_fee
         assert model_name in AZURE_OPENAI_MODEL_LIST
         lm = get_azure_lm(model_name)
     elif backend == 'vllm':
-        lm = dspy.HFClientVLLM(model=model_name, port=7777, url="http://localhost", max_tokens=2048, stop=["\n\n---\n\n"])
+        lm = dspy.HFClientVLLM(model=model_name, port=port_number, url="http://localhost", max_tokens=2048, stop=["\n\n---\n\n"])
     else:
         raise NotImplementedError
 
@@ -239,7 +239,7 @@ def main(model_name, save_dir, dataset_name, compilation_feedback, execution_fee
         assert user_feedback_simulator_name in AZURE_OPENAI_MODEL_LIST
         user_feedback_simulator = get_azure_lm(user_feedback_simulator_name)
     elif simulator_backend == 'vllm':
-        user_feedback_simulator = dspy.HFClientVLLM(model=user_feedback_simulator_name, port=7777, url="http://localhost",
+        user_feedback_simulator = dspy.HFClientVLLM(model=user_feedback_simulator_name, port=port_number, url="http://localhost",
                                                     max_tokens=2048, stop=["\n\n---\n\n"])
     else:
         raise NotImplementedError
@@ -384,6 +384,8 @@ if __name__ == '__main__':
                               Use this if the generated code of that id incurs undesirable effects such as termination of the experiment, damage to the environment, etc.")
     parser.add_argument("--denylist_iter", type=str, default=None,
                         help="A list of iteration numbers for denylist to skip the experiment. Split by commas.")
+    parser.add_argument("--port_number", type=int, default=7777,
+                        help="Port number for vllm")
 
     args = parser.parse_args()
 
